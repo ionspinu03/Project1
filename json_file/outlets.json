@@ -1,0 +1,2074 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Web Reporting and Management Interface</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" / -->
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/fluidgrid/fluid.gs.css"/>
+<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="/static/css/fluidgrid/fluid.gs.lt_ie8.css"/><![endif]-->
+
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/smoothness/jquery-ui-1.10.4.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/mlddMenu/mlddmenu.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.grid.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.columnpicker.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.pager.css" />
+
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick-wrmi-default-theme.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.multiselect-1.13.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.ui.combobox.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.ui.tabs.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.tagit.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/smoothness/wrmi-smoothness.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/wrmi.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/multi-select.css"/>
+
+
+<script src="/static/plugins/jquery-1.11.0.2/js/jquery/jquery-1.11.0.min.js" type="text/javascript" ></script>
+
+
+<script type="text/javascript" src="/static/js/jQuery/jquery-ui-1.10.4.custom.min.js"></script>
+<script type="text/javascript">
+wrmi = {
+	namespace: function(p_ns){
+        var path = p_ns.split(".");
+        var ns = window[path[0]] = window[path[0]] || {};
+        for (var i = 1; i < path.length; i++) {
+        	ns = ns[path[i]] = ns[path[i]] || {};
+        }
+        return ns;
+    },
+
+    blockUI: function() {
+        $('#contentDiv').block({
+            theme: true,
+            fadeIn: 500,
+            fadeOut: 500,
+            title: "Please wait",
+            message: "Waiting for response ..."
+        });
+    },
+
+    unblockUI: function() {
+    	$('#contentDiv').unblock();
+    },
+
+    blockDiv: function(divId) {
+        $('#' + divId).block({
+                                   theme: true,
+                                   fadeIn: 500,
+                                   fadeOut: 500,
+                                   title: "Please wait",
+                                   message: "Waiting for response ..."
+                               });
+    },
+
+    unblockDiv: function(divId) {
+        $('#' + divId).unblock();
+    },
+
+    blockDialog: function(dialogId, widthInPercent) {
+        $('#' + dialogId).parent().block({
+            theme: true,
+            themedCSS: { width: widthInPercent + "%" },
+            fadeIn: 500,
+            fadeOut: 500,
+            title: "Please wait",
+            message: "Waiting for response ..."
+        });
+    },
+
+    unblockDialog: function(dialogId) {
+        $('#' + dialogId).parent().unblock();
+    },
+
+    clearMessages: function() {
+        $("#feedbackPanelError").css('display', 'none');
+        $("#feedbackPanelInfo").css('display', 'none');
+        $("#feedbackPanelWarning").css('display', 'none');
+        $("#feedbackPanelSuccess").css('display', 'none');
+    },
+
+    displayErrorMessage: function(msg) {
+        $("#errorMessagePanel_message").html(msg);
+        $("#feedbackPanelError").css('display', 'block');
+    },
+
+    displayInfoMessage: function(msg) {
+        $("#infoMessagePanel_message").html(msg);
+        $("#feedbackPanelInfo").css('display', 'block');
+    },
+
+    displayWarningMessage: function(msg) {
+        $("#warningMessagePanel_message").html(msg);
+        $("#feedbackPanelWarning").css('display', 'block');
+    },
+
+    displaySuccessMessage: function(msg) {
+        $("#successMessagePanel_message").html(msg);
+        $("#feedbackPanelSuccess").css('display', 'block');
+    },
+
+    colorInputsDefault: function() {
+        var allInputs = $(":input[type=text]");
+        allInputs.each(function (item, index) {
+            $("#" + this.id).css({"border-color": ""});
+        })
+    },
+
+    colorErrorFields: function(fieldIds) {
+        fieldIds.forEach(function (item, index) {
+            $("#" + item).css({"border-color": "red"});
+        })
+    }
+
+};
+
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+String.prototype.insertBeforeSuffix = function(strToInsert) {
+    var lastIdx = this.lastIndexOf('.');
+    return this.substr(0,lastIdx) + strToInsert + this.substring(lastIdx,this.length);
+};
+
+
+String.prototype.trim = function() {
+    return $.trim(this);
+};
+</script>
+
+
+
+<script type="text/javascript" src="/static/js/wrmi.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/mlddMenu/mlddmenu.js"></script>
+<script type="text/javascript" src="/static/js/lib/firebugx.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.multiselect-1.13.js"></script>
+
+<script type="text/javascript" src="/static/js/lib/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drag.live-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drop-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drop.live-2.2.js"></script>
+
+<script type="text/javascript" src="/static/js/lib/jquery.jsonp-1.1.0.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.simulate.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.sparkline.min.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.blockUI.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.timers.1.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.tools-1.2.6.min.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.x-0.1.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.ui.combobox-1.0.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.ui.tabs.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/tag-it.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.multi-select.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.mask.min.js"></script>
+
+<script type="text/javascript" src="/static/js/monthpicker/jquery.ui.monthpicker.min.js"></script>
+
+<script type="text/javascript" src="/static/js/slickgrid/slick.core.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.dataview.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.editors.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.formatters.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.grid.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.groupitemmetadataprovider.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.remotemodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/controls/slick.pager.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/controls/slick.columnpicker.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.rowselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.singlerowselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellrangedecorator.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellrangeselector.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.singlecellselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.autotooltips.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.checkboxselectcolumn.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/commonSlickGrid.js?jv=12"></script>
+
+<script type="text/javascript" src="/static/js/dialogs.js"></script>
+
+<script type="text/javascript" src="/static/js/scopes/component/scopeSet.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeRestrictions.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeSlickGrid.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeComponentPanels.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeComponent.js?jv=12"></script>
+
+    
+    <meta name="layout" content="default/main"/>
+    <meta name="pageTitle" content="wrmi.menu.report.ctTransactions"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/report/report.css" />
+    <script type="text/javascript" src="/static/js/formUtils.js"></script>
+    
+<script type="text/javascript" src="/static/js/report/ReportRowType.js"></script>
+<script type="text/javascript">
+	wrmi.report.createReportGrid = function () {
+
+	    wrmi.report.reportGrid = wrmi.slickGrid.createCommonGrid();
+	    wrmi.report.reportGrid.extend({
+
+	        options: {
+	            showHeaderRow: false,
+	            showFooterRow: true,
+	            footerRowClass: "reportTotalRow",
+	            allowSorting: false,
+	            tripleStateSorting: true,
+	            dataItemColumnValueExtractor: function(item, colDef) {
+	                if (item.rowType != wrmi.report.ReportRowType.STANDARD && wrmi.report.reportGrid.grid.getColumnIndex(colDef.id) == 0) {
+	                	var gridCols = wrmi.report.reportGrid.grid.getColumns();
+	                	var totalColumn = item.rowTypeCol;
+	                	var leftMarginColumn = totalColumn;
+	                	var leftMargin = 0;
+	                	var options = wrmi.report.reportGrid.options;
+
+						if(options.totalsColumnExtraParameter && options.totalsColumnExtraParameter.column === totalColumn){
+							leftMargin = options.totalsColumnExtraParameter.margin
+						}else{
+							for (var i = 0; i < gridCols.length && gridCols[i].id != leftMarginColumn; i++) {
+								leftMargin += gridCols[i].width;
+							}
+						}
+	                    var formattedTotal = item[totalColumn + "Formatted"] != null ? item[totalColumn + "Formatted"] : item[totalColumn] != null ? item[totalColumn] : "";
+	                    return "<span style='margin-left: " + leftMargin + "px; width: 100%;'>" +
+	                            wrmi.report.reportGrid.getTotalsLabels()[item.rowTypeCol] + " (" + formattedTotal + "):</span>";
+	                }
+	                var formattedField = item[colDef.field + "Formatted"];
+	                return formattedField != null ? formattedField : item[colDef.field] != null ? item[colDef.field] : "";
+	            }
+	        },
+
+	        getItemMetadataFn: function() {
+	            var outer = this;
+	            return function (row) {
+		            var data = this.getItem(row);
+		            if (data.rowType != wrmi.report.ReportRowType.STANDARD) {
+		                return {
+		                	"cssClasses": "reportTotalRow",
+		                    "columns": {
+		                      0: {
+		                        "colspan": outer.totalRowColspan
+		                      }
+		                    }
+
+		                }
+		            }
+                    return null;
+                }
+	        },
+
+	        getFooterText: function(colId) {
+	            if (this.grid.getColumnIndex(colId) == 0) {
+	            	return "Grand Total:";
+	            }
+	            else {
+                    var formattedField = this.footerData[colId + "Formatted"];
+                    return formattedField != null ? formattedField : this.footerData[colId] != null ? this.footerData[colId] : "";
+	            }
+	        },
+
+	        getTotalsLabels: function() {
+		        if (this.totalLabels == null) {
+			        var totalsLabels = [];
+				    
+				    	
+			    	
+				    	
+			        		totalsLabels["businessDay"] = "Day Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["week"] = "Week Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["vlt"] = "CT Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["supplier"] = "Supplier Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["outletDisplayNumber"] = "Outlet Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["outletDscr"] = "Outlet Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["companyCode"] = "Company Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["companyDisplayName"] = "Company Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["countryCode"] = "Country Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["activityOutletDisplayNumber"] = "Outlet Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["activityCompanyCode"] = "Company Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["activityCountryCode"] = "Country Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["cashier"] = "Cashier Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["cashierAndDevice"] = "Cashier and Device Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["deviceDisplayNumber"] = "Device Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["accountEntryType"] = "Entry Type Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["gameSupplier"] = "Game Supplier Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["gameDesigner"] = "Game Designer Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["gameSet"] = "Game Set Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["game"] = "Game Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["gameVersion"] = "Game Version Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["drawId"] = "Draw Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["county"] = "County Sum";
+			        	
+			    	
+				    	
+			    	
+				    	
+			        		totalsLabels["promoName"] = "Promotion Name";
+			        	
+			    	
+				    	
+			        		totalsLabels["promotionName"] = "Promotion Sum";
+			        	
+			    	
+				    	
+			        		totalsLabels["currencyCode"] = "Grand Total ";
+			        	
+			    	
+		        }
+		    	return totalsLabels;
+		    },
+
+            getComparerFn: function (sortAsc) {
+                var outer = this;
+                return function (a, b) {
+                    if (sortAsc == null) {
+                        return parseInt(a.id) > parseInt(b.id) ? 1 : -1;
+                    }
+                    if (a.rowType === b.rowType) {
+						var x = a[outer.sortcol];
+						var y = b[outer.sortcol];
+
+                    	if(x && y) {
+							if (isNaN(x) || isNaN(y)) {
+								x = x.toLowerCase();
+								y = y.toLowerCase();
+							} else {
+								x = Number(x);
+								y = Number(y);
+							}
+						}
+                        return (x === y ? 0 : (x > y ? 1 : -1));
+                    } else {
+                        return sortAsc ? -wrmi.report.ReportRowType.compare(a.rowType, b.rowType)
+                                         : wrmi.report.ReportRowType.compare(a.rowType, b.rowType);
+                    }
+                }
+            }
+	    });
+	    return wrmi.report.reportGrid;
+	}
+</script>
+    <script type="text/javascript">
+        
+    </script>
+
+</head>
+<body>
+
+<div id="headerDiv">
+    <div id="headerTopDivs">
+        <div id="leftHeaderDiv">
+    <div id="wrmiAppHeader">
+        Web Reporting and Management Interface
+    </div>
+</div>
+
+        <div id="rightHeaderDiv">
+    
+        <div>
+    Logged in as
+    <a href="#" class="">ISpinu</a>
+    &nbsp;|&nbsp;
+    <a href="/password/changePassword">Change Password</a>
+    &nbsp;|&nbsp;
+    <a href="/logout/index">Log Out</a>
+</div>
+<div class="lastLoginIp">
+    Last login:
+    &nbsp;<span>8/15/24 5:19 AM</span>&nbsp;
+    <span>from this IP (10.94.0.10)</span>
+</div>
+
+    
+</div>
+
+        <div id="clockDisplay">
+    Server time:
+    &nbsp;<span id="serverTime">xx:xx:xx</span>
+</div>
+
+
+
+        <div class="clear"></div>
+    </div>
+    
+        <script type="text/javascript">
+
+    function hideHeader() {
+        jQuery.ajax({type:'POST', url:'/home/hideHeader',success:function(data,textStatus){},error:function(XMLHttpRequest,textStatus,errorThrown){}});
+        updateElements(false);
+    }
+
+    function showHeader() {
+        jQuery.ajax({type:'POST', url:'/home/showHeader',success:function(data,textStatus){},error:function(XMLHttpRequest,textStatus,errorThrown){}});
+        updateElements(true);
+    }
+
+    function updateElements(visible) {
+        if (visible) {
+            $("#headerHideDiv").css("display", "block");
+            $("#headerShowDiv").css("display", "none");
+            $("#headerTopDivs").css("display", "block");
+            $("#headerDiv").css("height", "60px");
+            $("#headerMenuDiv").css("top", "60px");
+            $("#pageTitleDiv").css("top", "90px");
+            $("#contentDiv").css("margin-top", "150px");
+        } else {
+            $("#headerHideDiv").css("display", "none");
+            $("#headerShowDiv").css("display", "block");
+            $("#headerTopDivs").css("display", "none");
+            $("#headerDiv").css("height", "10px");
+            $("#headerMenuDiv").css("top", "10px");
+            $("#pageTitleDiv").css("top", "40px");
+            $("#contentDiv").css("margin-top", "100px");
+        }
+    }
+
+    $(function() {
+        updateElements(true);
+    });
+</script>
+
+<div id="headerHideDiv" class='headerHide' onclick="hideHeader()" style="display: none"></div>
+<div id="headerShowDiv" class='headerShow' onclick="showHeader()" style="display: none"></div>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+        $(function() {
+
+            function sortMenu($node) {
+                var menuItems = $('>li', $node);
+
+                menuItems.sort(function(a,b){
+                    if ($(a).hasClass("lastPosition")) {
+                        return 1;
+                    }
+                    if ($(b).hasClass("lastPosition")) {
+                        return -1;
+                    }
+                    var $aHref = $(a).find('>a');
+                    var $bHref = $(b).find('>a');
+                    return $aHref.text().toUpperCase() > $bHref.text().toUpperCase() ? 1 : -1;
+                });
+
+                $node.empty();
+
+                menuItems.each(function(i,el) {
+                    var $subnode = $('>ul', el);
+                    var submenu = $subnode.length ? $subnode : $('>div>ul', el);
+
+                    if (submenu.length) {
+                        sortMenu(submenu);
+                    }
+
+                    $node.append(menuItems[i]);
+                });
+            }
+
+            sortMenu($('#management'));
+            sortMenu($('#reports'));
+
+            // move submenu to the right because of the scrollbar
+            window.addEventListener("load", function() {
+
+                $('li.parent').on('mouseover', function() {
+                    var $menuItem = $(this);
+                    var $submenuWrapper = $('.wrapper ul', $menuItem);
+                    var submenuTopPos = $menuItem.offset().top;
+                    var submenuLeftPos = $menuItem.parent().position().left + $menuItem.parent().width();
+
+                    $submenuWrapper.css(
+                        {
+                            top: submenuTopPos,
+                            left: submenuLeftPos
+                        }
+                    );
+                });
+            });
+
+            $('#reportMenu').on('mouseenter', function() {
+                $('ul.reportsDropdown').scrollTop(0);
+            });
+
+        });
+</script>
+
+<div id="headerMenuDiv">
+
+<ul class="mlddm">
+    <li>
+        <a href="/">Dashboard</a>
+    </li>
+
+
+        
+            
+                <li>
+                    <a href="#">Management</a>
+                    <ul id="management">
+                    
+                        
+                            <li class="submenu">
+                                <a href="#">Masterdata</a>
+                                <ul>
+                                    
+                                    
+                                        <li><a href="/ct/index">CT</a></li>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                </ul>
+                            </li>
+                        
+
+                        <!-- Manage Data corrections -->
+                        
+
+                        <!-- Manage Jackpot -->
+                        
+
+                        <!-- Manage LOTO -->
+                        
+
+                        <!-- Marketing -->
+                        
+
+                        <!-- Manage Tickets -->
+                        
+
+                        <!-- User Management (User & Roles) -->
+                        
+                            <li class="submenu">
+                                <a href="#">User Management</a>
+                                <ul>
+                                    
+                                        <li><a href="/user/manageUsers">User</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                        
+                    </ul>
+                </li>
+            
+        
+
+        
+            
+        
+
+    
+            
+                <li id="reportMenu">
+                    <a href="#">Reports</a>
+                    <div class="wrapper">
+                        <ul id="reports" class="reportsDropdown">
+                            
+                                <li><a href="/dataIssuesReport/form">Data Issues Report</a></li>
+                            
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+                            
+                            
+                            
+                                <li><a href="/accountingTotalsReport/form">Accounting / Totals Report</a></li>
+                            
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/activeTerminalsReport/form">Active Terminals</a></li>
+                            
+                            
+                                <li><a href="/activeTerminalsROReport/form">Active Terminals</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/ctTransactionsReport/form">Terminal Transactions Report</a></li>
+                            
+                            
+                            
+                                <li><a href="/eventsReport/form">Events Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/gameBreakdownReport/form">Game Breakdown Report</a></li>
+                                <li><a href="/gameBreakdownByVltReport/form">Game Breakdown By CT Report</a></li>
+                            
+                            
+                                <li><a href="/gamePerformanceReport/form">Game Performance Report</a></li>
+                                <li><a href="/gamePerformanceByGameSetReport/form">Game Performance By Game Set Report</a></li>
+                            
+                            
+                                <li><a href="/jackpot01Report/form">Jackpot Wins Report</a></li>
+                            
+                            
+                            
+                            
+                                <li><a href="/playerLiabilityReport/form">Player Liability Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/terminalPerformanceReport/form">Terminal Performance</a></li>
+                            
+                            
+                                <li><a href="/terminalPerformanceReport/form?reportType=Custom">Terminal Performance Custom</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/taxSessionReport/form">Tax Report</a></li>
+                            
+                            
+                            
+                            
+                                <li><a href="/registeredPlayersReport/form">Registered Players Report</a></li>
+                            
+                            
+                                <li><a href="/expiredWinsReport/form">Expired Wins Report</a></li>
+                            
+                            
+                                <li><a href="/playerAccountReport/form">Player Account Report</a></li>
+                            
+                            
+                                <li><a href="/dailyTotalsReport/form">Daily Outlet Totals Report</a></li>
+                            
+                            
+                                <li><a href="/taxTransactionHistoryReport/form">Tax Transaction History Report</a></li>
+                            
+                            
+                                <li><a href="/registeredCtReport/form">CT Report</a></li>
+                            
+                            
+                                <li><a href="/outletTransactionHistoryReport/form">Outlet Transaction History Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/moneyLaunderingReport/form">MD - Money Laundering Report</a></li>
+                            
+                            
+                                <li><a href="/moneyLaundering23Report/form">MD - Money Laundering Report 2023</a></li>
+                            
+                            
+                                <li><a href="/playerTransactionReport/form">Player Transaction Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li class="lastPosition"><a href="/recentReports/list">My Recent Reports</a></li>
+                        </ul>
+                    </div>
+                </li>
+            
+    
+
+    
+        
+    
+
+</ul>
+
+</div>
+
+</div>
+
+<div id="pageTitleDiv" class="pageTitle">
+    
+        
+            <h1 id="pageTitle">
+                Terminal Transactions Report
+            </h1>
+        
+    
+</div>
+
+<div id="contentDiv">
+    
+    <div id="feedbackPanelError" class="messagePanel ui-widget ui-state-error" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+        <span id="errorMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelWarning" class="messagePanel ui-widget ui-state-warning" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-notice"></span>
+        <span id="warningMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelInfo" class="messagePanel ui-widget ui-state-info" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-info"></span>
+        <span id="infoMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelSuccess" class="messagePanel ui-widget ui-state-success" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-circle-check"></span>
+        <span id="successMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    <div style="margin-top: 10px" />
+    
+    <div id="reportParamsDiv" style="margin-top:25px;">
+        <div id="reportResultInfoDiv" class="warning" style="display: none">
+        </div>
+        <form onsubmit="wrmi.form.datePicker.addHiddenFormFields('reportForm');wrmi.blockUI();jQuery.ajax({type:'POST',data:jQuery(this).serialize(), url:'/ctTransactionsReport/execute',success:function(data,textStatus){jQuery('#resultDiv').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){},complete:function(XMLHttpRequest,textStatus){wrmi.unblockUI()}});return false" method="post" action="/ctTransactionsReport/execute" class="cssform" id="reportForm">
+            <input type="hidden" name="scopes" value="" id="scopes" />
+            <script type="text/javascript">
+	wrmi.namespace("wrmi.form.datePicker");
+	$(function() {
+		var datePickerParams = {
+			dateFormat: "dd.mm.yy",
+			dayNames: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+			dayNamesMin: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+			dayNamesShort: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+			monthNames: ['January','February','March','April','May','June','July','August','September','October','November','December',''],
+			monthNamesShort: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','']
+		};
+	    $("#date").datepicker(datePickerParams);
+		var date = $("#date").datepicker("getDate");
+		if ($.browser.msie || !date) {
+        	$("#date").datepicker("setDate", new Date());
+		}
+        
+	        if (null != null) {
+	            $("#date").datepicker("setDate", new Date(null));
+	        }
+	    
+	});
+
+	wrmi.form.datePicker.addHiddenFormFields = function(formName) {
+		var date = $("#date").datepicker("getDate");
+        if (date) {
+            var dateGMT = date.getTime() - date.getTimezoneOffset() * 60000;
+            addHiddenFormInput(formName, "dateGMT", dateGMT);
+        }
+	}
+</script>
+<div class="form-section" style="width:110px; float: left;">
+    <label for="date">Business Day</label>
+    <input type="text" id="date" name="date"/>
+</div>
+
+            <div class="form-section" style="width:150px; float: left;">
+                <label for="filterDevice">Device</label>
+                <span id="devicesSelect">
+                    <select id="filterDevice" name="filterDevice"></select>
+                </span>
+                <input type="hidden" name="preselectedDeviceId" value="" id="preselectedDeviceId" />
+            </div>
+        </form>
+        <div style="clear:both"></div>
+        <!-- Scope selection wizard component -->
+
+
+<div id="scopeSelectionWizardContainer">
+
+    <!-- ### country wizard panel ### -->
+<div id="countrySelectionWizardPanel" class="wizardPanel" style="display:none">
+
+    <div id="countryGridPanel" class="scopeGridPanel" style="position:relative; padding-left:15px;">
+      <div id="countryGridContainer" style="width:600px;">
+          <div id="countryGridHeader" class="grid-header" style="width:100%">
+              <div style="float:left;">
+                  <label>Choose scope - country</label>
+              </div>
+              
+                  <div style="padding-right:5px; float: right; font-weight: 700;">
+                      <input type="hidden" name="_countryTestOutletCheckbox" /><input type="checkbox" name="countryTestOutletCheckbox" style="width: 16px; height: 14px; vertical-align: text-top;" id="countryTestOutletCheckbox"  />
+                      Show Test Outlets
+                      <div class="tooltip-mark">?<span class="tooltiptext">Include <i>Test Outlets</i> in the scope selection. <br/><i>Test Outlets</i> are marked with <i>(Test)</i>!</span></div>
+                  </div>
+              
+              <div id="countryGridHeaderPlugin" class="wizardPanelHeaderPluginContainer" style="float:right;">
+                  
+              </div>
+              <div style="clear:both"></div>
+          </div>
+          <div id="countryGrid" class="grid grid-scope" style="width:100%;"></div>
+          <div id="countryGridFooter" class="grid-footer">
+              <div class="statusLine" style="visibility:hidden; padding:0 6px;"></div>
+              <div class="selectedScopesInfo" style="padding:0 6px;">.</div> <!-- do not remove dot - it is placeholder -->
+              <div class="rowsInfo" style="padding:0 6px;"></div>
+          </div>
+      </div>
+    </div>
+</div>
+    <!-- ### company wizard panel ### -->
+<div id="companySelectionWizardPanel" class="wizardPanel" style="display:none">
+
+    <div id="companyGridPanel" class="scopeGridPanel" style="position:relative; padding-left:15px;">
+      <div id="companyGridContainer" style="width:600px;">
+          <div id="companyGridHeader" class="grid-header" style="width:100%">
+              <div style="float:left;">
+                  <label>Choose scope - company</label>
+              </div>
+              
+                  <div style="padding-right:5px; float: right; font-weight: 700;">
+                      <input type="hidden" name="_companyTestOutletCheckbox" /><input type="checkbox" name="companyTestOutletCheckbox" style="width: 16px; height: 14px; vertical-align: text-top;" id="companyTestOutletCheckbox"  />
+                      Show Test Outlets
+                      <div class="tooltip-mark">?<span class="tooltiptext">Include <i>Test Outlets</i> in the scope selection. <br/><i>Test Outlets</i> are marked with <i>(Test)</i>!</span></div>
+                  </div>
+              
+              <div id="companyGridHeaderPlugin" class="wizardPanelHeaderPluginContainer" style="float:right;">
+                  
+              </div>
+              <div style="clear:both"></div>
+          </div>
+          <div id="companyGrid" class="grid grid-scope" style="width:100%;"></div>
+          <div id="companyGridFooter" class="grid-footer">
+              <div class="statusLine" style="visibility:hidden; padding:0 6px;"></div>
+              <div class="selectedScopesInfo" style="padding:0 6px;">.</div> <!-- do not remove dot - it is placeholder -->
+              <div class="rowsInfo" style="padding:0 6px;"></div>
+          </div>
+      </div>
+    </div>
+</div>
+    <!-- ### outletGroup wizard panel ### -->
+<div id="outletGroupSelectionWizardPanel" class="wizardPanel" style="display:none">
+
+    <div id="outletGroupGridPanel" class="scopeGridPanel" style="position:relative; padding-left:15px;">
+      <div id="outletGroupGridContainer" style="width:600px;">
+          <div id="outletGroupGridHeader" class="grid-header" style="width:100%">
+              <div style="float:left;">
+                  <label>Choose scope - outlet group</label>
+              </div>
+              
+                  <div style="padding-right:5px; float: right; font-weight: 700;">
+                      <input type="hidden" name="_outletGroupTestOutletCheckbox" /><input type="checkbox" name="outletGroupTestOutletCheckbox" style="width: 16px; height: 14px; vertical-align: text-top;" id="outletGroupTestOutletCheckbox"  />
+                      Show Test Outlets
+                      <div class="tooltip-mark">?<span class="tooltiptext">Include <i>Test Outlets</i> in the scope selection. <br/><i>Test Outlets</i> are marked with <i>(Test)</i>!</span></div>
+                  </div>
+              
+              <div id="outletGroupGridHeaderPlugin" class="wizardPanelHeaderPluginContainer" style="float:right;">
+                  
+              </div>
+              <div style="clear:both"></div>
+          </div>
+          <div id="outletGroupGrid" class="grid grid-scope" style="width:100%;"></div>
+          <div id="outletGroupGridFooter" class="grid-footer">
+              <div class="statusLine" style="visibility:hidden; padding:0 6px;"></div>
+              <div class="selectedScopesInfo" style="padding:0 6px;">.</div> <!-- do not remove dot - it is placeholder -->
+              <div class="rowsInfo" style="padding:0 6px;"></div>
+          </div>
+      </div>
+    </div>
+</div>
+    <!-- ### outlet wizard panel ### -->
+<div id="outletSelectionWizardPanel" class="wizardPanel" style="display:none">
+
+    <div id="outletGridPanel" class="scopeGridPanel" style="position:relative; padding-left:15px;">
+      <div id="outletGridContainer" style="width:600px;">
+          <div id="outletGridHeader" class="grid-header" style="width:100%">
+              <div style="float:left;">
+                  <label>Choose scope - outlet</label>
+              </div>
+              
+                  <div style="padding-right:5px; float: right; font-weight: 700;">
+                      <input type="hidden" name="_outletTestOutletCheckbox" /><input type="checkbox" name="outletTestOutletCheckbox" style="width: 16px; height: 14px; vertical-align: text-top;" id="outletTestOutletCheckbox"  />
+                      Show Test Outlets
+                      <div class="tooltip-mark">?<span class="tooltiptext">Include <i>Test Outlets</i> in the scope selection. <br/><i>Test Outlets</i> are marked with <i>(Test)</i>!</span></div>
+                  </div>
+              
+              <div id="outletGridHeaderPlugin" class="wizardPanelHeaderPluginContainer" style="float:right;">
+                  
+              </div>
+              <div style="clear:both"></div>
+          </div>
+          <div id="outletGrid" class="grid grid-scope" style="width:100%;"></div>
+          <div id="outletGridFooter" class="grid-footer">
+              <div class="statusLine" style="visibility:hidden; padding:0 6px;"></div>
+              <div class="selectedScopesInfo" style="padding:0 6px;">.</div> <!-- do not remove dot - it is placeholder -->
+              <div class="rowsInfo" style="padding:0 6px;"></div>
+          </div>
+      </div>
+    </div>
+</div>
+
+    <div class="sswPanelButtons" style="padding:15px 0 15px 15px">
+        <button class="sswBtnBack" type="button" value="back">Back</button>
+        <button class="sswBtnNext" type="button" value="next">Next</button>
+        <button class="sswBtnNext2" type="button" value="next">Choose outlet</button>
+        
+            <button class="sswBtnGetResultScopes" type="button" value="getResultScopes" style="margin-left: 20px">
+                Execute
+            </button>
+        
+        
+    </div>
+</div>
+<!-- end of scopeSelectionWizardContainer div -->
+
+<div id="scopeSelectionWizardContainerSummary" class="sswSummaryPanel" style="margin:10px; display:none">
+    <div class="scopeType">
+        Selected scope type: <span class="selectedScopeType"></span>
+    </div>
+    <div class="scopes">
+        Selected scopes:
+        <div class="selectedScopes"></div>
+    </div>
+    <button class="sswBtnExpand" type="button" value="edit" style="margin-top:16px">
+        Edit
+    </button>
+</div>
+
+
+<script type="text/javascript">
+    wrmi.scopeSelectionWizardData = {};
+
+    wrmi.scopeSelectionWizardData.maxVisibleRows = 8;
+    wrmi.scopeSelectionWizardData.collapseOnExecute = false;
+    wrmi.scopeSelectionWizardData.allScopesSelectedOnInit = false;
+    wrmi.scopeSelectionWizardData.allowNoSelection = false;
+    wrmi.scopeSelectionWizardData.disableSaveButton = false;
+    wrmi.scopeSelectionWizardData.readonly = false;
+    wrmi.scopeSelectionWizardData.scopeType = 'OUTLET';
+    wrmi.scopeSelectionWizardData.canSpecifyScopesOnMultiScopeSelection = false;
+    wrmi.scopeSelectionWizardData.executeAfterWizardStateInit = false;
+
+
+    wrmi.scopeSelectionWizardData.localization = {};
+
+    wrmi.scopeSelectionWizardData.localization.btnNext = {
+        company: "Choose company",
+        outletGroup: "Choose outlet group",
+        outlet: "Choose outlet"
+    };
+
+    wrmi.scopeSelectionWizardData.localization.messages = {
+        selectScope: "Select a scope please.",
+        narrowScope: "Narrow your scope selection please."
+    };
+
+    wrmi.scopeSelectionWizardData.localization.grid = {
+        checkboxColumnTooltip: "Select/deselect all",
+        cellLabelAllcountry: "All countries",
+        cellLabelAllcompany: "All companies",
+        cellLabelAlloutlet: "All outlets"
+    };
+
+    wrmi.scopeSelectionWizardData.localization.footer = {
+        patternRows0:  "There are no rows.",
+        patternRows1:  "Displaying 1 row.",
+        patternRowsN:  "Displaying #1 rows.",
+        patternRowsFilter:  "Displaying #2 of #1 rows.",
+        patternSelRows1: "1 row is selected.",
+        patternSelRowsN: "#1 rows are selected.",
+        statusMessage: {
+            unprocessable: "Please select more specific scope."
+        }
+    };
+
+
+    
+        wrmi.scopeSelectionWizardData.localization.btnExecute = "Execute";
+    
+
+    wrmi.scopeSelectionWizardData.scopeTypesWithPreselection = [];
+    
+    wrmi.scopeSelectionWizardData.scopeTypesWithPreselection.push('country');
+    
+
+    wrmi.scopeSelectionWizardData.outputScopeTypes = [];
+    
+        wrmi.scopeSelectionWizardData.outputScopeTypes.push('outlet');
+    
+
+    wrmi.scopeSelectionWizardData.restrictions = wrmi.scope.createRestrictions();
+    
+        wrmi.scopeSelectionWizardData.restrictions.add('ONE', 'ONE', 'NONE', 'ONE');
+    
+        wrmi.scopeSelectionWizardData.restrictions.add('ONE', 'ONE', 'ONE', 'NONE');
+    
+</script>
+
+
+<script type="text/javascript">
+
+    //
+    // country data
+    //
+    wrmi.scopeSelectionWizardData.country = { };
+    wrmi.scopeSelectionWizardData.country.rows = [];
+
+    wrmi.scopeSelectionWizardData.scopes = {};
+    wrmi.scopeSelectionWizardData.scopes.country = [];
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('country')) {
+wrmi.scopeSelectionWizardData.scopes.country.push({
+scopeType: 'country',
+id: "19",
+countryCode: "MD",
+companiesAmount: "2",
+scopeId: "19",
+
+toString: function() {return this.countryCode;}
+});
+}
+    
+
+    wrmi.scopeSelectionWizardData.country.columns = [
+        {}, // checkbox selector placeholder
+        {id:"countryCode", field:"countryCode", width:100, cssClass:"cell-title", sortable:true, name:"Country"},
+        {id:"companiesAmount", field:"companiesAmount", width:170, sortable:true, name:"Companies" }
+    ];
+
+    wrmi.scopeSelectionWizardData.country.options = {
+        enableCellNavigation: true,
+        forceFitColumns: false,
+        topPanelHeight: 25
+    };
+    wrmi.scopeSelectionWizardData.country.options.maxVisibleRows = wrmi.scopeSelectionWizardData.maxVisibleRows;
+
+    wrmi.scopeSelectionWizardData.country.columnFilters = {
+    };
+
+    wrmi.scopeSelectionWizardData.country.imageSrc = {
+        checkBoxOn:  "/static/images/checkBoxOn.png",
+        checkBoxOff: "/static/images/checkBoxOff.png"
+    };
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    //
+    // company data
+    //
+    wrmi.scopeSelectionWizardData.company = {};
+    wrmi.scopeSelectionWizardData.company.rows = [];
+
+    wrmi.scopeSelectionWizardData.scopes.company = [];
+    
+    if (!true || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('company')) {
+        wrmi.scopeSelectionWizardData.scopes.company.push({
+                                                            scopeType: 'company',
+                                                            id: "0",
+                                                            countryCompanyId: "0",
+                                                            countryCode: "MD",
+                                                            company: "0",
+                                                            outletGroupsAmount: 0,
+                                                            outletsAmount: 39,
+                                                            offset:"-",
+                                                            scopeId: "0",
+                                                            
+                                                            toString: function () {
+                                                                return this.company + ", " + this.countryCode;
+                                                            }
+                                                        });
+    }
+    
+    if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('company')) {
+        wrmi.scopeSelectionWizardData.scopes.company.push({
+                                                            scopeType: 'company',
+                                                            id: "21901",
+                                                            countryCompanyId: "21901",
+                                                            countryCode: "MD",
+                                                            company: "LNM",
+                                                            outletGroupsAmount: 0,
+                                                            outletsAmount: 33,
+                                                            offset:"09:00",
+                                                            scopeId: "21901",
+                                                            
+                                                            toString: function () {
+                                                                return this.company + ", " + this.countryCode;
+                                                            }
+                                                        });
+    }
+    
+    if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('company')) {
+        wrmi.scopeSelectionWizardData.scopes.company.push({
+                                                            scopeType: 'company',
+                                                            id: "21902",
+                                                            countryCompanyId: "21902",
+                                                            countryCode: "MD",
+                                                            company: "NOVO insvest md",
+                                                            outletGroupsAmount: 0,
+                                                            outletsAmount: 6,
+                                                            offset:"09:00",
+                                                            scopeId: "21902",
+                                                            
+                                                            toString: function () {
+                                                                return this.company + ", " + this.countryCode;
+                                                            }
+                                                        });
+    }
+    
+
+    wrmi.scopeSelectionWizardData.company.columns = [
+        {}, // checkbox selector placeholder
+        {
+            id: "countryCode",
+            field: "countryCode",
+            width: 80,
+            cssClass: "cell-title",
+            sortable: true,
+            name: "Country"
+        },
+        {
+            id: "company", field: "company", width: 140, sortable: true,
+            formatter: function (row, cell, value, columnDef, dataContext) {
+                return value === '0' ? "All companies" : value;
+            },
+            name: "Company"
+        },
+        {
+            id: "outletGroupsAmount",
+            field: "outletGroupsAmount",
+            width: 120,
+            sortable: true,
+            name: "Outlet Groups"
+        },
+        {
+            id: "outletsAmount",
+            field: "outletsAmount",
+            width: 100,
+            sortable: true,
+            name: "Outlets"
+        },
+        {
+            id: "offset",
+            field: "offset",
+            width: 160,
+            toolTip: "The business day offset indicates the time when the business starts, e.g. 05:00. This means a business goes from 05:00 to 05:00 on next day and not from midnight to midnight.",
+            sortable: true,
+            name: "Business Day Offset"
+        }
+    ];
+
+    wrmi.scopeSelectionWizardData.company.options = {
+        enableCellNavigation: true,
+        forceFitColumns: false,
+        topPanelHeight: 25
+    };
+    wrmi.scopeSelectionWizardData.company.options.maxVisibleRows = wrmi.scopeSelectionWizardData.maxVisibleRows;
+
+    wrmi.scopeSelectionWizardData.company.columnFilters = {};
+
+    wrmi.scopeSelectionWizardData.company.imageSrc = {
+        checkBoxOn: "/static/images/checkBoxOn.png",
+        checkBoxOff: "/static/images/checkBoxOff.png"
+    };
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    //
+    // outlet group data
+    //
+    wrmi.scopeSelectionWizardData.outletGroup = { };
+    wrmi.scopeSelectionWizardData.outletGroup.rows = [];
+
+    wrmi.scopeSelectionWizardData.scopes.outletGroup = [];
+    
+
+    wrmi.scopeSelectionWizardData.outletGroup.columns = [
+        {}, // checkbox selector placeholder
+        {id:"countryCode", field:"countryCode", width:80, cssClass:"cell-title", sortable:true, name:"Country" },
+        {id:"company", field:"company", width:140, sortable:true,
+            formatter: function(row, cell, value, columnDef, dataContext) {
+                return value === '0' ? "All companies" : value;
+            },
+            name:"Company" },
+        {id:"ogName", field:"ogName", width:160, sortable:true, name:"Outlet Group" }
+    ];
+
+    wrmi.scopeSelectionWizardData.outletGroup.options = {
+        enableCellNavigation: true,
+        forceFitColumns: false,
+        topPanelHeight: 25
+    };
+    wrmi.scopeSelectionWizardData.outletGroup.options.maxVisibleRows = wrmi.scopeSelectionWizardData.maxVisibleRows;
+
+    wrmi.scopeSelectionWizardData.outletGroup.columnFilters = {
+    };
+
+    wrmi.scopeSelectionWizardData.outletGroup.imageSrc = {
+        checkBoxOn:  "/static/images/checkBoxOn.png",
+        checkBoxOff: "/static/images/checkBoxOff.png"
+    };
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    //
+    // outlet data
+    //
+    wrmi.scopeSelectionWizardData.outlet = { };
+    wrmi.scopeSelectionWizardData.outlet.rows = [];
+
+    wrmi.scopeSelectionWizardData.scopes.outlet = [];
+    
+    
+if (!true || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_0",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "0",
+scopeId: "0",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!true || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_0",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "0",
+scopeId: "0",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21901026",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "1234",
+scopeId: "21901026",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900044",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "03-0025",
+scopeId: "21900044",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900037",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "10-0020",
+scopeId: "21900037",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900038",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "10-0021",
+scopeId: "21900038",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900023",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0004",
+scopeId: "21900023",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900022",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0005",
+scopeId: "21900022",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900027",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0006",
+scopeId: "21900027",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900025",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0007",
+scopeId: "21900025",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900024",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0008",
+scopeId: "21900024",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900028",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0009",
+scopeId: "21900028",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900029",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0010",
+scopeId: "21900029",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900026",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0011",
+scopeId: "21900026",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900030",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0012",
+scopeId: "21900030",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900031",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0013",
+scopeId: "21900031",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900036",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0017",
+scopeId: "21900036",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900032",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0018",
+scopeId: "21900032",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900039",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0019",
+scopeId: "21900039",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900042",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0022",
+scopeId: "21900042",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900043",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0023",
+scopeId: "21900043",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900045",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0027",
+scopeId: "21900045",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900049",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0031",
+scopeId: "21900049",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900053",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0035",
+scopeId: "21900053",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900054",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0037",
+scopeId: "21900054",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900055",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "11-0038",
+scopeId: "21900055",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900041",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "25-0024",
+scopeId: "21900041",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900046",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "29-0030",
+scopeId: "21900046",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900040",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "60-0026",
+scopeId: "21900040",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900052",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "62-0033",
+scopeId: "21900052",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900033",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "64-0014",
+scopeId: "21900033",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900050",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "78-0032",
+scopeId: "21900050",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900051",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "78-0034",
+scopeId: "21900051",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900034",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "92-0015",
+scopeId: "21900034",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21901_21900035",
+countryCompanyId: "21901",
+countryCode: "MD",
+company: "LNM",
+oName: "92-0016",
+scopeId: "21900035",
+test: "false",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900001",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0001 *</i>",
+scopeId: "21900001",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900002",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0002 *</i>",
+scopeId: "21900002",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900003",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0003 *</i>",
+scopeId: "21900003",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900004",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0004 *</i>",
+scopeId: "21900004",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900005",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0005 *</i>",
+scopeId: "21900005",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+if (!false || wrmi.scopeSelectionWizardData.restrictions.canChooseAll('outlet')) {
+wrmi.scopeSelectionWizardData.scopes.outlet.push({
+scopeType: 'outlet',
+id: "21902_21900006",
+countryCompanyId: "21902",
+countryCode: "MD",
+company: "NOVO insvest md",
+oName: "<i>(Test) 99-0006 *</i>",
+scopeId: "21900006",
+test: "true",
+toString: function() {return this.oName + ", " + this.company + ", " + this.countryCode;}
+});
+}
+    
+
+    wrmi.scopeSelectionWizardData.outlet.columns = [
+        {}, // checkbox selector placeholder
+        {id:"countryCode", field:"countryCode", width:80, cssClass:"cell-title", sortable:true, name:"Country" },
+        {id:"company", field:"company", width:140, sortable:true, name:"Company" },
+        {id:"oName", field:"oName", width:200, sortable:true,
+            formatter: function(row, cell, value, columnDef, dataContext) {
+                return value === '0' ? "All outlets" : value;
+            },
+            name:"Outlet"
+        },
+        {id: "test", field:"test", width: -0.01/*negative width to hide column in grid*/}
+    ];
+
+    wrmi.scopeSelectionWizardData.outlet.options = {
+        enableCellNavigation: true,
+        forceFitColumns: false,
+        topPanelHeight: 25
+    };
+    wrmi.scopeSelectionWizardData.outlet.options.maxVisibleRows = wrmi.scopeSelectionWizardData.maxVisibleRows;
+
+    wrmi.scopeSelectionWizardData.outlet.columnFilters = {
+    };
+
+    wrmi.scopeSelectionWizardData.outlet.imageSrc = {
+        checkBoxOn:  "/static/images/checkBoxOn.png",
+        checkBoxOff: "/static/images/checkBoxOff.png"
+    };
+
+</script>
+
+
+
+
+
+<script type="text/javascript">
+    wrmi.scopeSelectionWizardCreateAndInit = function() {
+        wrmi.scopeSelectionWizard = wrmi.scope.component.create();
+        
+                    wrmi.scopeSelectionWizard.registerListener('onProcessUserSelection', function(selectedScopes) {
+                        wrmi.blockUI();
+                        $("#reportResultInfoDiv").css('display', 'none');
+                        addHiddenFormInput("reportForm", "scopes", selectedScopes.toScopeIds());
+                        wrmi.form.datePicker.addHiddenFormFields("reportForm");
+                        $("#reportForm").submit();
+                    });
+                    wrmi.scopeSelectionWizard.registerListener('onChangeUserSelection', function(selectedScopes) {
+                    jQuery.ajax({type:'POST',data:'scopes=' + selectedScopes.toScopeIds(), url:'/scopeSelectionFeatureReport/getOutletDevices',success:function(data,textStatus){jQuery('#devicesSelect').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){}});
+                    });
+                
+        wrmi.scopeSelectionWizard.init('scopeSelectionWizardContainer', wrmi.scopeSelectionWizardData);
+        
+
+        
+    };
+
+    
+        $(function() {
+            wrmi.scopeSelectionWizardCreateAndInit();
+        });
+    
+</script>
+
+    </div>
+
+    <form onsubmit="jQuery.ajax({type:'POST',data:jQuery(this).serialize(), url:'/ctTransactionsReport/viewReport',success:function(data,textStatus){jQuery('#resultDiv').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){}});return false" method="post" action="/ctTransactionsReport/viewReport" id="viewReportForm">
+        <input type="hidden" name="reportId" value="" id="reportId" />
+    </form>
+
+    <div id="resultDiv" style="min-width: 1300px; margin-top:20px">
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    displayServerTime($("#serverTime"));
+
+    function displayServerTime($serverTime) {
+          var serverTimeMillis = 1723818835276;
+          var serverTimeDiffMillis  = new Date().getTime() - serverTimeMillis;
+          if($serverTime.length > 0) {
+              setInterval(function() {
+                  $serverTime.text(getTime(serverTimeDiffMillis));
+              }, 500);
+          }
+      }
+
+    function leadZeros(value, width) {
+        while (String(value).length < width) {
+            value = "0" + value;
+        }
+        return value;
+    }
+
+     function getTime(timeDiffMillis) {
+        // calculate current date for display
+        var now = new Date(new Date().getTime() - timeDiffMillis);
+        // set the date to the time holder element
+        return [
+            leadZeros(now.getHours(), 2),
+            leadZeros(now.getMinutes(), 2),
+            leadZeros(now.getSeconds(), 2)
+        ].join(":");
+    }
+</script>
+</body>
+</html>

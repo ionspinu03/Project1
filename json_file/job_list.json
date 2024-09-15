@@ -1,0 +1,911 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Web Reporting and Management Interface</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" / -->
+    <link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/fluidgrid/fluid.gs.css"/>
+<!--[if lt IE 8]><link rel="stylesheet" type="text/css" href="/static/css/fluidgrid/fluid.gs.lt_ie8.css"/><![endif]-->
+
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/smoothness/jquery-ui-1.10.4.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/mlddMenu/mlddmenu.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.grid.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.columnpicker.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick.pager.css" />
+
+<link rel="stylesheet" type="text/css" href="/static/css/slickgrid/slick-wrmi-default-theme.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.multiselect-1.13.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.ui.combobox.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.ui.tabs.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/jquery.tagit.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/smoothness/wrmi-smoothness.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/wrmi.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/jQuery/multi-select.css"/>
+
+
+<script src="/static/plugins/jquery-1.11.0.2/js/jquery/jquery-1.11.0.min.js" type="text/javascript" ></script>
+
+
+<script type="text/javascript" src="/static/js/jQuery/jquery-ui-1.10.4.custom.min.js"></script>
+<script type="text/javascript">
+wrmi = {
+	namespace: function(p_ns){
+        var path = p_ns.split(".");
+        var ns = window[path[0]] = window[path[0]] || {};
+        for (var i = 1; i < path.length; i++) {
+        	ns = ns[path[i]] = ns[path[i]] || {};
+        }
+        return ns;
+    },
+
+    blockUI: function() {
+        $('#contentDiv').block({
+            theme: true,
+            fadeIn: 500,
+            fadeOut: 500,
+            title: "Please wait",
+            message: "Waiting for response ..."
+        });
+    },
+
+    unblockUI: function() {
+    	$('#contentDiv').unblock();
+    },
+
+    blockDiv: function(divId) {
+        $('#' + divId).block({
+                                   theme: true,
+                                   fadeIn: 500,
+                                   fadeOut: 500,
+                                   title: "Please wait",
+                                   message: "Waiting for response ..."
+                               });
+    },
+
+    unblockDiv: function(divId) {
+        $('#' + divId).unblock();
+    },
+
+    blockDialog: function(dialogId, widthInPercent) {
+        $('#' + dialogId).parent().block({
+            theme: true,
+            themedCSS: { width: widthInPercent + "%" },
+            fadeIn: 500,
+            fadeOut: 500,
+            title: "Please wait",
+            message: "Waiting for response ..."
+        });
+    },
+
+    unblockDialog: function(dialogId) {
+        $('#' + dialogId).parent().unblock();
+    },
+
+    clearMessages: function() {
+        $("#feedbackPanelError").css('display', 'none');
+        $("#feedbackPanelInfo").css('display', 'none');
+        $("#feedbackPanelWarning").css('display', 'none');
+        $("#feedbackPanelSuccess").css('display', 'none');
+    },
+
+    displayErrorMessage: function(msg) {
+        $("#errorMessagePanel_message").html(msg);
+        $("#feedbackPanelError").css('display', 'block');
+    },
+
+    displayInfoMessage: function(msg) {
+        $("#infoMessagePanel_message").html(msg);
+        $("#feedbackPanelInfo").css('display', 'block');
+    },
+
+    displayWarningMessage: function(msg) {
+        $("#warningMessagePanel_message").html(msg);
+        $("#feedbackPanelWarning").css('display', 'block');
+    },
+
+    displaySuccessMessage: function(msg) {
+        $("#successMessagePanel_message").html(msg);
+        $("#feedbackPanelSuccess").css('display', 'block');
+    },
+
+    colorInputsDefault: function() {
+        var allInputs = $(":input[type=text]");
+        allInputs.each(function (item, index) {
+            $("#" + this.id).css({"border-color": ""});
+        })
+    },
+
+    colorErrorFields: function(fieldIds) {
+        fieldIds.forEach(function (item, index) {
+            $("#" + item).css({"border-color": "red"});
+        })
+    }
+
+};
+
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+String.prototype.insertBeforeSuffix = function(strToInsert) {
+    var lastIdx = this.lastIndexOf('.');
+    return this.substr(0,lastIdx) + strToInsert + this.substring(lastIdx,this.length);
+};
+
+
+String.prototype.trim = function() {
+    return $.trim(this);
+};
+</script>
+
+
+
+<script type="text/javascript" src="/static/js/wrmi.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/mlddMenu/mlddmenu.js"></script>
+<script type="text/javascript" src="/static/js/lib/firebugx.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.multiselect-1.13.js"></script>
+
+<script type="text/javascript" src="/static/js/lib/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drag.live-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drop-2.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.event.drop.live-2.2.js"></script>
+
+<script type="text/javascript" src="/static/js/lib/jquery.jsonp-1.1.0.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.simulate.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.sparkline.min.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.blockUI.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.timers.1.2.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.tools-1.2.6.min.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.x-0.1.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.ui.combobox-1.0.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.ui.tabs.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/tag-it.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.multi-select.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.mask.min.js"></script>
+
+<script type="text/javascript" src="/static/js/monthpicker/jquery.ui.monthpicker.min.js"></script>
+
+<script type="text/javascript" src="/static/js/slickgrid/slick.core.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.dataview.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.editors.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.formatters.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.grid.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.groupitemmetadataprovider.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/slick.remotemodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/controls/slick.pager.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/controls/slick.columnpicker.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.rowselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.singlerowselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellrangedecorator.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellrangeselector.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.cellselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.singlecellselectionmodel.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.autotooltips.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/plugins/slick.checkboxselectcolumn.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/slickgrid/commonSlickGrid.js?jv=12"></script>
+
+<script type="text/javascript" src="/static/js/dialogs.js"></script>
+
+<script type="text/javascript" src="/static/js/scopes/component/scopeSet.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeRestrictions.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeSlickGrid.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeComponentPanels.js?jv=12"></script>
+<script type="text/javascript" src="/static/js/scopes/component/scopeComponent.js?jv=12"></script>
+
+    
+    <meta name="layout" content="default/main"/>
+    <meta name="pageTitle" content="wrmi.menu.report.recentReports"/>
+    <script type="text/javascript">
+        wrmi.namespace("wrmi.report");
+        
+        $(function() {
+            wrmi.report.recentReportsGrid.init('recentReportsGrid', { gridState: {sortColumnId: "executionTime", sortDirAsc: false} });
+
+            	var data = [];
+	
+	    data.push({
+	            id: "ae86c496-9789-445b-ab15-06a0ac4815cf",
+	            executionTime: "2024-08-26T23:03:02.484+03:00",
+	            formattedExecutionTime: '26.08.2024 23:03:02',
+	            name: '<a href="/ctTransactionsReport/form?reportId=ae86c496-9789-445b-ab15-06a0ac4815cf&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "3381"
+	        });
+	
+	    data.push({
+	            id: "c7da4f85-033a-4e4d-b4ab-fc4e7a2994b3",
+	            executionTime: "2024-08-26T23:03:02.519+03:00",
+	            formattedExecutionTime: '26.08.2024 23:03:02',
+	            name: '<a href="/ctTransactionsReport/form?reportId=c7da4f85-033a-4e4d-b4ab-fc4e7a2994b3&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "686"
+	        });
+	
+	    data.push({
+	            id: "484596b5-c66e-40bf-937b-92b846789655",
+	            executionTime: "2024-08-26T23:06:35.446+03:00",
+	            formattedExecutionTime: '26.08.2024 23:06:35',
+	            name: '<a href="/ctTransactionsReport/form?reportId=484596b5-c66e-40bf-937b-92b846789655&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "5925"
+	        });
+	
+	    data.push({
+	            id: "6ff7d27e-81af-4a74-afc1-8a9e746ae38c",
+	            executionTime: "2024-08-26T23:07:30.262+03:00",
+	            formattedExecutionTime: '26.08.2024 23:07:30',
+	            name: '<a href="/ctTransactionsReport/form?reportId=6ff7d27e-81af-4a74-afc1-8a9e746ae38c&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "1106"
+	        });
+	
+	    data.push({
+	            id: "0f873b00-2bc0-4279-a9f5-c2f125af907a",
+	            executionTime: "2024-08-26T23:09:28.875+03:00",
+	            formattedExecutionTime: '26.08.2024 23:09:28',
+	            name: '<a href="/ctTransactionsReport/form?reportId=0f873b00-2bc0-4279-a9f5-c2f125af907a&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "4789"
+	        });
+	
+	    data.push({
+	            id: "b96f2bb2-da4c-4ddf-a843-bfec6fa050ea",
+	            executionTime: "2024-08-26T23:10:02.665+03:00",
+	            formattedExecutionTime: '26.08.2024 23:10:02',
+	            name: '<a href="/ctTransactionsReport/form?reportId=b96f2bb2-da4c-4ddf-a843-bfec6fa050ea&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "2554"
+	        });
+	
+	    data.push({
+	            id: "ef30a25d-3b3d-4f0f-b25b-464199c46888",
+	            executionTime: "2024-08-26T23:10:56.944+03:00",
+	            formattedExecutionTime: '26.08.2024 23:10:56',
+	            name: '<a href="/ctTransactionsReport/form?reportId=ef30a25d-3b3d-4f0f-b25b-464199c46888&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "1755"
+	        });
+	
+	    data.push({
+	            id: "c54e0188-d847-47f7-a65f-0342df1dd88f",
+	            executionTime: "2024-08-26T23:10:56.949+03:00",
+	            formattedExecutionTime: '26.08.2024 23:10:56',
+	            name: '<a href="/ctTransactionsReport/form?reportId=c54e0188-d847-47f7-a65f-0342df1dd88f&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "376"
+	        });
+	
+	    data.push({
+	            id: "06076a7b-b6f5-46ee-8fc7-8893cf5ac54f",
+	            executionTime: "2024-08-26T23:13:54.491+03:00",
+	            formattedExecutionTime: '26.08.2024 23:13:54',
+	            name: '<a href="/ctTransactionsReport/form?reportId=06076a7b-b6f5-46ee-8fc7-8893cf5ac54f&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "1562"
+	        });
+	
+	    data.push({
+	            id: "02bf31cb-081b-45a0-9291-97fb60346ae7",
+	            executionTime: "2024-08-26T23:14:28.949+03:00",
+	            formattedExecutionTime: '26.08.2024 23:14:28',
+	            name: '<a href="/ctTransactionsReport/form?reportId=02bf31cb-081b-45a0-9291-97fb60346ae7&amp;reportType=">Terminal Transactions Report</a>',
+	            state: "FINISHED",
+	            
+	                dateFrom: null,
+	                dateTo: null,
+	            
+	            rowCount: "189"
+	        });
+	
+	
+	wrmi.report.recentReportsGrid.setData(data);
+;
+
+            setTimeout('wrmi.report.refreshRecentReports()', 30000);
+        });
+
+        wrmi.report.refreshRecentReports = function() {
+        	document.forms["refreshForm"].onsubmit();
+            setTimeout('wrmi.report.refreshRecentReports()', 30000);
+        };
+    </script>
+    <script type="text/javascript">
+	wrmi.namespace("wrmi.report");
+
+    wrmi.report.recentReportsGrid = wrmi.slickGrid.createCommonGrid();
+    wrmi.report.recentReportsGrid.extend({
+
+	    columns: [
+            {id:"state", name: "Status" , field:"state", width:80, cssClass:"cell-title center", sortable:true, selectable:false, resizable: false},
+            {id:"name", name: "Name" , field:"name", width:500, cssClass:"cell-title left", sortable:true, selectable:false},
+            {id:"executionTime", name: "Execution Time", field:"executionTime", width:180, cssClass:"cell-title center", sortable:true, selectable:false, resizable: false},
+	        {id:"info", name: "Info", field:"info", width: 280, cssClass:"cell-title left", sortable:true, selectable:false, resizable: false}
+	    ],
+
+	    options: {
+            showHeaderRow: false,
+	        dataItemColumnValueExtractor: function(item, colDef) {
+                if (colDef.id == "state") {
+                    if (item.state == "IN_PROGRESS") {
+                        return "<img src='/static/images/report/status_progress.png' style='padding-top: 3px' title='In progress'/>";
+                    } else if (item.state == "FINISHED") {
+                        return "<img src='/static/images/report/status_finished.png' style='padding-top: 3px' title='Finished'/>";
+                    } else if (item.state == "FAILED") {
+                      return "<img src='/static/images/report/status_failed.png' style='padding-top: 3px' title='Failed'/>";
+                    }
+                    return 'Invalid State'
+                } else if (colDef.id == "localizedName") {
+
+				} else if (colDef.id == "executionTime") {
+					return item.formattedExecutionTime
+                } else if (colDef.id == "info") {
+                    var info = '';
+                    if (item.dateFrom) {
+                        info = '(' + item.dateFrom + '-' + item.dateTo + ') ';
+                    }
+                    info += item.rowCount + ' records';
+                    return info;
+  				}
+				return item[colDef.field];
+	        }
+	    }
+	});
+</script>
+
+</head>
+<body>
+
+<div id="headerDiv">
+    <div id="headerTopDivs">
+        <div id="leftHeaderDiv">
+    <div id="wrmiAppHeader">
+        Web Reporting and Management Interface
+    </div>
+</div>
+
+        <div id="rightHeaderDiv">
+    
+        <div>
+    Logged in as
+    <a href="#" class="">ISpinu</a>
+    &nbsp;|&nbsp;
+    <a href="/password/changePassword">Change Password</a>
+    &nbsp;|&nbsp;
+    <a href="/logout/index">Log Out</a>
+</div>
+<div class="lastLoginIp">
+    Last login:
+    &nbsp;<span>8/20/24 9:40 AM</span>&nbsp;
+    <span>from this IP (10.94.0.10)</span>
+</div>
+
+    
+</div>
+
+        <div id="clockDisplay">
+    Server time:
+    &nbsp;<span id="serverTime">xx:xx:xx</span>
+</div>
+
+
+
+        <div class="clear"></div>
+    </div>
+    
+        <script type="text/javascript">
+
+    function hideHeader() {
+        jQuery.ajax({type:'POST', url:'/home/hideHeader',success:function(data,textStatus){},error:function(XMLHttpRequest,textStatus,errorThrown){}});
+        updateElements(false);
+    }
+
+    function showHeader() {
+        jQuery.ajax({type:'POST', url:'/home/showHeader',success:function(data,textStatus){},error:function(XMLHttpRequest,textStatus,errorThrown){}});
+        updateElements(true);
+    }
+
+    function updateElements(visible) {
+        if (visible) {
+            $("#headerHideDiv").css("display", "block");
+            $("#headerShowDiv").css("display", "none");
+            $("#headerTopDivs").css("display", "block");
+            $("#headerDiv").css("height", "60px");
+            $("#headerMenuDiv").css("top", "60px");
+            $("#pageTitleDiv").css("top", "90px");
+            $("#contentDiv").css("margin-top", "150px");
+        } else {
+            $("#headerHideDiv").css("display", "none");
+            $("#headerShowDiv").css("display", "block");
+            $("#headerTopDivs").css("display", "none");
+            $("#headerDiv").css("height", "10px");
+            $("#headerMenuDiv").css("top", "10px");
+            $("#pageTitleDiv").css("top", "40px");
+            $("#contentDiv").css("margin-top", "100px");
+        }
+    }
+
+    $(function() {
+        updateElements(true);
+    });
+</script>
+
+<div id="headerHideDiv" class='headerHide' onclick="hideHeader()" style="display: none"></div>
+<div id="headerShowDiv" class='headerShow' onclick="showHeader()" style="display: none"></div>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+        $(function() {
+
+            function sortMenu($node) {
+                var menuItems = $('>li', $node);
+
+                menuItems.sort(function(a,b){
+                    if ($(a).hasClass("lastPosition")) {
+                        return 1;
+                    }
+                    if ($(b).hasClass("lastPosition")) {
+                        return -1;
+                    }
+                    var $aHref = $(a).find('>a');
+                    var $bHref = $(b).find('>a');
+                    return $aHref.text().toUpperCase() > $bHref.text().toUpperCase() ? 1 : -1;
+                });
+
+                $node.empty();
+
+                menuItems.each(function(i,el) {
+                    var $subnode = $('>ul', el);
+                    var submenu = $subnode.length ? $subnode : $('>div>ul', el);
+
+                    if (submenu.length) {
+                        sortMenu(submenu);
+                    }
+
+                    $node.append(menuItems[i]);
+                });
+            }
+
+            sortMenu($('#management'));
+            sortMenu($('#reports'));
+
+            // move submenu to the right because of the scrollbar
+            window.addEventListener("load", function() {
+
+                $('li.parent').on('mouseover', function() {
+                    var $menuItem = $(this);
+                    var $submenuWrapper = $('.wrapper ul', $menuItem);
+                    var submenuTopPos = $menuItem.offset().top;
+                    var submenuLeftPos = $menuItem.parent().position().left + $menuItem.parent().width();
+
+                    $submenuWrapper.css(
+                        {
+                            top: submenuTopPos,
+                            left: submenuLeftPos
+                        }
+                    );
+                });
+            });
+
+            $('#reportMenu').on('mouseenter', function() {
+                $('ul.reportsDropdown').scrollTop(0);
+            });
+
+        });
+</script>
+
+<div id="headerMenuDiv">
+
+<ul class="mlddm">
+    <li>
+        <a href="/">Dashboard</a>
+    </li>
+
+
+        
+            
+                <li>
+                    <a href="#">Management</a>
+                    <ul id="management">
+                    
+                        
+                            <li class="submenu">
+                                <a href="#">Masterdata</a>
+                                <ul>
+                                    
+                                    
+                                        <li><a href="/ct/index">CT</a></li>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                </ul>
+                            </li>
+                        
+
+                        <!-- Manage Data corrections -->
+                        
+
+                        <!-- Manage Jackpot -->
+                        
+
+                        <!-- Manage LOTO -->
+                        
+
+                        <!-- Marketing -->
+                        
+
+                        <!-- Manage Tickets -->
+                        
+
+                        <!-- User Management (User & Roles) -->
+                        
+                            <li class="submenu">
+                                <a href="#">User Management</a>
+                                <ul>
+                                    
+                                        <li><a href="/user/manageUsers">User</a></li>
+                                    
+                                    
+                                </ul>
+                            </li>
+                        
+                    </ul>
+                </li>
+            
+        
+
+        
+            
+        
+
+    
+            
+                <li id="reportMenu">
+                    <a href="#">Reports</a>
+                    <div class="wrapper">
+                        <ul id="reports" class="reportsDropdown">
+                            
+                                <li><a href="/dataIssuesReport/form">Data Issues Report</a></li>
+                            
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+                            
+                            
+                            
+                                <li><a href="/accountingTotalsReport/form">Accounting / Totals Report</a></li>
+                            
+                            
+                            
+                            
+                            
+
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/activeTerminalsReport/form">Active Terminals</a></li>
+                            
+                            
+                                <li><a href="/activeTerminalsROReport/form">Active Terminals</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/ctTransactionsReport/form">Terminal Transactions Report</a></li>
+                            
+                            
+                            
+                                <li><a href="/eventsReport/form">Events Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/gameBreakdownReport/form">Game Breakdown Report</a></li>
+                                <li><a href="/gameBreakdownByVltReport/form">Game Breakdown By CT Report</a></li>
+                            
+                            
+                                <li><a href="/gamePerformanceReport/form">Game Performance Report</a></li>
+                                <li><a href="/gamePerformanceByGameSetReport/form">Game Performance By Game Set Report</a></li>
+                            
+                            
+                                <li><a href="/jackpot01Report/form">Jackpot Wins Report</a></li>
+                            
+                            
+                            
+                            
+                                <li><a href="/playerLiabilityReport/form">Player Liability Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/terminalPerformanceReport/form">Terminal Performance</a></li>
+                            
+                            
+                                <li><a href="/terminalPerformanceReport/form?reportType=Custom">Terminal Performance Custom</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/taxSessionReport/form">Tax Report</a></li>
+                            
+                            
+                            
+                            
+                                <li><a href="/registeredPlayersReport/form">Registered Players Report</a></li>
+                            
+                            
+                                <li><a href="/expiredWinsReport/form">Expired Wins Report</a></li>
+                            
+                            
+                                <li><a href="/playerAccountReport/form">Player Account Report</a></li>
+                            
+                            
+                                <li><a href="/dailyTotalsReport/form">Daily Outlet Totals Report</a></li>
+                            
+                            
+                                <li><a href="/taxTransactionHistoryReport/form">Tax Transaction History Report</a></li>
+                            
+                            
+                                <li><a href="/registeredCtReport/form">CT Report</a></li>
+                            
+                            
+                                <li><a href="/outletTransactionHistoryReport/form">Outlet Transaction History Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                                <li><a href="/moneyLaunderingReport/form">MD - Money Laundering Report</a></li>
+                            
+                            
+                                <li><a href="/moneyLaundering23Report/form">MD - Money Laundering Report 2023</a></li>
+                            
+                            
+                                <li><a href="/playerTransactionReport/form">Player Transaction Report</a></li>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li class="lastPosition"><a href="/recentReports/list">My Recent Reports</a></li>
+                        </ul>
+                    </div>
+                </li>
+            
+    
+
+    
+        
+    
+
+</ul>
+
+</div>
+
+</div>
+
+<div id="pageTitleDiv" class="pageTitle">
+    
+        
+            <h1 id="pageTitle">
+                My Recent Reports
+            </h1>
+        
+    
+</div>
+
+<div id="contentDiv">
+    
+    <div id="feedbackPanelError" class="messagePanel ui-widget ui-state-error" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span>
+        <span id="errorMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelWarning" class="messagePanel ui-widget ui-state-warning" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-notice"></span>
+        <span id="warningMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelInfo" class="messagePanel ui-widget ui-state-info" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-info"></span>
+        <span id="infoMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    
+    <div id="feedbackPanelSuccess" class="messagePanel ui-widget ui-state-success" style="display: none">
+        <span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-circle-check"></span>
+        <span id="successMessagePanel_message" style="display: inline-block"></span>
+    </div>
+
+    <div style="margin-top: 10px" />
+    
+    <div style="width:100%; margin-top:20px">
+        <div id="recentReportsGrid" class="grid"></div>
+    </div>
+
+    <form onsubmit="jQuery.ajax({type:'POST',data:jQuery(this).serialize(), url:'/recentReports/refresh',success:function(data,textStatus){jQuery('#onUpdateJs').html(data);},error:function(XMLHttpRequest,textStatus,errorThrown){}});return false" method="post" action="/recentReports/refresh" id="refreshForm">
+    </form>
+    <div id="onUpdateJs"></div>
+
+</div>
+
+<script type="text/javascript">
+    displayServerTime($("#serverTime"));
+
+    function displayServerTime($serverTime) {
+          var serverTimeMillis = 1724703709452;
+          var serverTimeDiffMillis  = new Date().getTime() - serverTimeMillis;
+          if($serverTime.length > 0) {
+              setInterval(function() {
+                  $serverTime.text(getTime(serverTimeDiffMillis));
+              }, 500);
+          }
+      }
+
+    function leadZeros(value, width) {
+        while (String(value).length < width) {
+            value = "0" + value;
+        }
+        return value;
+    }
+
+     function getTime(timeDiffMillis) {
+        // calculate current date for display
+        var now = new Date(new Date().getTime() - timeDiffMillis);
+        // set the date to the time holder element
+        return [
+            leadZeros(now.getHours(), 2),
+            leadZeros(now.getMinutes(), 2),
+            leadZeros(now.getSeconds(), 2)
+        ].join(":");
+    }
+</script>
+</body>
+</html>
